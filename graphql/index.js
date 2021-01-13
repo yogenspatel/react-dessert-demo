@@ -16,11 +16,26 @@ const typeDefs = gql`
     protien: Int
   }
 
+  input DessertInput {
+    id: Int
+    name: String
+    calories: Int
+    fat: Int
+    carbs: Int
+    protien: Int
+  }
+
+
   # The "Query" type is special: it lists all of the available queries that
   # clients can execute, along with the return type for each. In this
   # case, the "dessert" query returns an array of zero or more Desserts (defined above).
   type Query {
     desserts: [dessert]
+  }
+
+  type Mutation {
+    addDessert(dessert: DessertInput): [dessert]
+    removeDessert(dessertIds: [Int]): [dessert]
   }
 `;
 
@@ -41,7 +56,7 @@ const desserts = [
       carbs: 9,
       protien: 37
     },
-  ];
+];
 
 // Resolvers define the technique for fetching the types defined in the
 // schema. This resolver retrieves desserts from the "desserts" array above.
@@ -49,13 +64,22 @@ const resolvers = {
     Query: {
       desserts: () => desserts,
     },
-    // Mutation: {
-    //   AddDessert: (name, calories, fat, carbs, protien) => {
-    //     return {
-    //       name, calories, fat, carbs, protien
-    //     }
-    //   }
-    // }
+    Mutation: {
+      addDessert: (_, { dessert }) => {
+        desserts.push(dessert);
+        return desserts;
+      },
+      removeDessert: (_, args) => {
+        const { dessertIds } = args;
+        dessertIds.map(id => {
+          const findDessertIndex = desserts.findIndex(dessert => dessert.id === id);
+          if (findDessertIndex >= 0) {
+            desserts.splice(findDessertIndex, 1);
+          }
+        });
+        return desserts;
+      }
+    }
 };
 
   // The ApolloServer constructor requires two parameters: your schema

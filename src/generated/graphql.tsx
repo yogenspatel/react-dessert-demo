@@ -26,9 +26,34 @@ export type Dessert = {
   protien?: Maybe<Scalars['Int']>;
 };
 
+export type DessertInput = {
+  id?: Maybe<Scalars['Int']>;
+  name?: Maybe<Scalars['String']>;
+  calories?: Maybe<Scalars['Int']>;
+  fat?: Maybe<Scalars['Int']>;
+  carbs?: Maybe<Scalars['Int']>;
+  protien?: Maybe<Scalars['Int']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   desserts?: Maybe<Array<Maybe<Dessert>>>;
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  addDessert?: Maybe<Array<Maybe<Dessert>>>;
+  removeDessert?: Maybe<Array<Maybe<Dessert>>>;
+};
+
+
+export type MutationAddDessertArgs = {
+  dessert?: Maybe<DessertInput>;
+};
+
+
+export type MutationRemoveDessertArgs = {
+  dessertIds?: Maybe<Array<Maybe<Scalars['Int']>>>;
 };
 
 export enum CacheControlScope {
@@ -36,6 +61,19 @@ export enum CacheControlScope {
   Private = 'PRIVATE'
 }
 
+
+export type AddDessertMutationVariables = Exact<{
+  dessert?: Maybe<DessertInput>;
+}>;
+
+
+export type AddDessertMutation = (
+  { __typename?: 'Mutation' }
+  & { addDessert?: Maybe<Array<Maybe<(
+    { __typename?: 'dessert' }
+    & Pick<Dessert, 'id' | 'name' | 'calories' | 'fat' | 'carbs' | 'protien'>
+  )>>> }
+);
 
 export type GetAllDessertsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -48,7 +86,57 @@ export type GetAllDessertsQuery = (
   )>>> }
 );
 
+export type RemoveDessertMutationVariables = Exact<{
+  dessertIds?: Maybe<Array<Maybe<Scalars['Int']>> | Maybe<Scalars['Int']>>;
+}>;
 
+
+export type RemoveDessertMutation = (
+  { __typename?: 'Mutation' }
+  & { removeDessert?: Maybe<Array<Maybe<(
+    { __typename?: 'dessert' }
+    & Pick<Dessert, 'id' | 'name' | 'calories' | 'fat' | 'carbs' | 'protien'>
+  )>>> }
+);
+
+
+export const AddDessertDocument = gql`
+    mutation addDessert($dessert: DessertInput) {
+  addDessert(dessert: $dessert) {
+    id
+    name
+    calories
+    fat
+    carbs
+    protien
+  }
+}
+    `;
+export type AddDessertMutationFn = Apollo.MutationFunction<AddDessertMutation, AddDessertMutationVariables>;
+
+/**
+ * __useAddDessertMutation__
+ *
+ * To run a mutation, you first call `useAddDessertMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddDessertMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addDessertMutation, { data, loading, error }] = useAddDessertMutation({
+ *   variables: {
+ *      dessert: // value for 'dessert'
+ *   },
+ * });
+ */
+export function useAddDessertMutation(baseOptions?: Apollo.MutationHookOptions<AddDessertMutation, AddDessertMutationVariables>) {
+        return Apollo.useMutation<AddDessertMutation, AddDessertMutationVariables>(AddDessertDocument, baseOptions);
+      }
+export type AddDessertMutationHookResult = ReturnType<typeof useAddDessertMutation>;
+export type AddDessertMutationResult = Apollo.MutationResult<AddDessertMutation>;
+export type AddDessertMutationOptions = Apollo.BaseMutationOptions<AddDessertMutation, AddDessertMutationVariables>;
 export const GetAllDessertsDocument = gql`
     query GetAllDesserts {
   desserts {
@@ -86,3 +174,40 @@ export function useGetAllDessertsLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export type GetAllDessertsQueryHookResult = ReturnType<typeof useGetAllDessertsQuery>;
 export type GetAllDessertsLazyQueryHookResult = ReturnType<typeof useGetAllDessertsLazyQuery>;
 export type GetAllDessertsQueryResult = Apollo.QueryResult<GetAllDessertsQuery, GetAllDessertsQueryVariables>;
+export const RemoveDessertDocument = gql`
+    mutation removeDessert($dessertIds: [Int]) {
+  removeDessert(dessertIds: $dessertIds) {
+    id
+    name
+    calories
+    fat
+    carbs
+    protien
+  }
+}
+    `;
+export type RemoveDessertMutationFn = Apollo.MutationFunction<RemoveDessertMutation, RemoveDessertMutationVariables>;
+
+/**
+ * __useRemoveDessertMutation__
+ *
+ * To run a mutation, you first call `useRemoveDessertMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoveDessertMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removeDessertMutation, { data, loading, error }] = useRemoveDessertMutation({
+ *   variables: {
+ *      dessertIds: // value for 'dessertIds'
+ *   },
+ * });
+ */
+export function useRemoveDessertMutation(baseOptions?: Apollo.MutationHookOptions<RemoveDessertMutation, RemoveDessertMutationVariables>) {
+        return Apollo.useMutation<RemoveDessertMutation, RemoveDessertMutationVariables>(RemoveDessertDocument, baseOptions);
+      }
+export type RemoveDessertMutationHookResult = ReturnType<typeof useRemoveDessertMutation>;
+export type RemoveDessertMutationResult = Apollo.MutationResult<RemoveDessertMutation>;
+export type RemoveDessertMutationOptions = Apollo.BaseMutationOptions<RemoveDessertMutation, RemoveDessertMutationVariables>;

@@ -1,4 +1,5 @@
 import React, { SyntheticEvent, useState } from 'react'
+import { useAddDessertMutation } from '../../generated/graphql';
 import { FormDessertField, FormVal } from '../../models/models';
 import Field from '../Field';
 
@@ -80,11 +81,11 @@ const AddDessert = (props: any) => {
                 transform: 'translate(-50%, -50%)'}} onSubmit={onSubmit}>
             
             <span
-                className="ba pointer tc dim br4 db w1 h1 absolute top-0 right-0 mr1 mt1"
+                className='ba pointer tc dim br4 db w1 h1 absolute top-0 right-0 mr1 mt1'
                 onClick={props.closeAddDessert}>
                     &#10006;</span>
-            <div className="mw5 mw7-ns center pa3 ph5-ns">
-                <p className="bg-orange ba white pa1">Please fill all details before you submit</p>
+            <div className='mw5 mw7-ns center pa3 ph5-ns'>
+                <p className='bg-orange ba white pa1'>Please fill all details before you submit</p>
                 {FormFieldData.map((field, i) => {
                     return (
                         <Field

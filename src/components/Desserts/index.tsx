@@ -1,5 +1,5 @@
 import React, { SyntheticEvent, useEffect, useState } from 'react';
-import { useGetAllDessertsQuery } from '../../generated/graphql';
+import { useAddDessertMutation, useGetAllDessertsQuery, useRemoveDessertMutation } from '../../generated/graphql';
 import { Dessert, FormVal, SortBy, SortOrderTypes } from '../../models/models';
 import AddDessert from '../AddDessert';
 import DessertRow from '../DessertRow';
@@ -7,6 +7,8 @@ import _ from 'lodash';
 
 const Desserts = () => {
     const { data, loading, error } = useGetAllDessertsQuery();
+    const [addDessertMutation] = useAddDessertMutation();
+    const [deleteDessertMutation] = useRemoveDessertMutation();
     const [dessertsState, setDessertsState]: [Array<Dessert>, any] = useState([]);
     const [selectedIndexes, setSelectedIndexes]: [Array<number>, any] = useState([]);
     const [showDessertAdd, setShowDessertAdd] = useState(false);
@@ -24,10 +26,10 @@ const Desserts = () => {
         return <div>{error.message}</div>;
     }
     
-    console.log('List of Desserts: ', dessertsState);
+    // console.log('List of Desserts: ', dessertsState);
     
     const selectedIndex = (index: number, selected: boolean) => {
-        console.log('In selected Index: ', index, selected);
+        // console.log('In selected Index: ', index, selected);
         if (selected) {
             setSelectedIndexes(selectedIndexes.concat(
                 index
@@ -44,49 +46,44 @@ const Desserts = () => {
         setShowDessertAdd(!showDessertAdd);
     }
 
-    const addDessert = (newVal: FormVal) => {
+    const addDessert = async (newVal: FormVal) => {
         setShowDessertAdd(false);
-        setDessertsState((currentDesserts: Array<Dessert>) => {
-            const newValArrayObject = Object.values(newVal);
-            const dessertNameIndex = currentDesserts.findIndex(dessert => dessert.name.toLowerCase() === newValArrayObject[0].toLowerCase());
-            if (dessertNameIndex >= 0) {
-                setErrorMsg('Duplicate Dessert name is not allowed');
-                return [...currentDesserts];
-            } else {
-                setErrorMsg('');
+        const newValArrayObject = Object.values(newVal);
+        const dessertNameIndex = dessertsState.findIndex(dessert => dessert.name.toLowerCase() === newValArrayObject[0].toLowerCase());
+        if (dessertNameIndex >= 0) {
+            setErrorMsg('Duplicate Dessert name is not allowed');
+        } else {
+            setErrorMsg('');
+        }
+        const dessertObject: Dessert = {
+            id: dessertsState.length + 1,
+            name: newValArrayObject[0],
+            calories: parseInt(newValArrayObject[1]),
+            fat: parseInt(newValArrayObject[2]),
+            carbs: parseInt(newValArrayObject[3]),
+            protien: parseInt(newValArrayObject[4])
+        };
+        const addDessertData = await addDessertMutation({
+            variables: {
+                dessert: dessertObject
             }
-            const dessertObject: Dessert = {
-                id: currentDesserts.length + 1,
-                name: newValArrayObject[0],
-                calories: newValArrayObject[1],
-                fat: newValArrayObject[2],
-                carbs: newValArrayObject[3],
-                protien: newValArrayObject[4]
-            };
-            return [...currentDesserts, dessertObject];
         });
+        setDessertsState(addDessertData.data?.addDessert);
     }
 
-    const deleteSelectedDesserts = (e: SyntheticEvent) => {
+    const deleteSelectedDesserts = async (e: SyntheticEvent) => {
         e.preventDefault();
         if (selectedIndexes.length) {
-            setDessertsState((currentDesserts: Array<Dessert>) => {
-                console.log('In set Desserts state: ', currentDesserts, selectedIndexes);
-                const newDessertsList = [...currentDesserts];
-                selectedIndexes.map(index => {
-                    const findDessertIndex = newDessertsList.findIndex(dessert => dessert.id === index);
-                    if (findDessertIndex >= 0) {
-                        newDessertsList.splice(findDessertIndex, 1);
-                    }
-                });    
-                setSelectedIndexes([]);
-                return newDessertsList;
+            const deleteDessertData = await deleteDessertMutation({
+                variables: {
+                    dessertIds: selectedIndexes
+                }
             });
+            setDessertsState(deleteDessertData.data?.removeDessert);
         }
     }
 
     const sortBy = (key: string, order: SortOrderTypes = 'ASC') => {
-        console.log('In sort by: ', sortByKey, key, order);
         if (sortByKey.key === key) {
             if (sortByKey.order === 'ASC') {
                 order = 'DESC';
@@ -99,7 +96,7 @@ const Desserts = () => {
             order
         });
         setDessertsState((currentDesserts: Array<Dessert>) => {
-            console.log('In set Desserts state: ', currentDesserts, selectedIndexes);
+            // console.log('In set Desserts state: ', currentDesserts, selectedIndexes);
             let newDessertsList = [...currentDesserts];
             newDessertsList = newDessertsList.sort((a, b) => {
                 let leftSide = _.get(a, key), // a[col.objectProperty],
@@ -150,7 +147,7 @@ const Desserts = () => {
         }
     }
 
-    if (desserts?.length) {
+    if (dessertsState?.length) {
         let deleteButtonClassNames = 'bw1 pointer mr2 o-50 br2 bg-gray black pa1 tc ttu tracked';
         if (selectedIndexes.length) {
             deleteButtonClassNames = 'bw1 pointer mr2 glow br2 bg-blue white pa1 tc ttu tracked';

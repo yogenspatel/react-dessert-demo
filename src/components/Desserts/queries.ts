@@ -11,3 +11,17 @@ export const GET_ALL_DESSERTS = gql `
     }
   }
 `;
+
+
+export const REMOVE_DESSERTS_BY_IDS = gql `
+  mutation removeDessert($dessertIds: [Int]) {
+    removeDessert(dessertIds: $dessertIds){
+        id
+        name
+        calories
+        fat
+        carbs
+        protien
+      }
+  }
+`;

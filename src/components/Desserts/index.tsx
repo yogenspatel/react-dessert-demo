@@ -32,14 +32,24 @@ const Desserts = () => {
     const selectedIndex = (index: number, selected: boolean) => {
         // console.log('In selected Index: ', index, selected);
         if (selected) {
-            setSelectedIndexes(selectedIndexes.concat(
-                index
-            ));
+            // setDessertsState((currentDesserts: Array<Dessert>) => {
+            setSelectedIndexes((currentSelectedIndexes: Array<number>) => {
+                const newSelectedIndexes = currentSelectedIndexes.concat(index);
+                if (newSelectedIndexes.length === dessertsState.length) {
+                    setSelectAll(true);
+                }
+                return newSelectedIndexes;
+            });
         } else {
-            setSelectedIndexes(selectedIndexes.filter(
-                i => i !== index
-            )); 
+            setSelectedIndexes((currentSelectedIndexes: Array<number>) => {
+                const newSelectedIndexes = selectedIndexes.filter(i => i !== index);
+                if (newSelectedIndexes.length !== dessertsState.length) {
+                    setSelectAll(false);
+                }
+                return newSelectedIndexes;
+            }); 
         }
+        console.log('In selectedIndex: ', selectedIndexes);
     }
 
     const toggleAddDessert = (e: SyntheticEvent) => {
@@ -100,15 +110,15 @@ const Desserts = () => {
             // console.log('In set Desserts state: ', currentDesserts, selectedIndexes);
             let newDessertsList = [...currentDesserts];
             newDessertsList = newDessertsList.sort((a, b) => {
-                let leftSide = _.get(a, key), // a[col.objectProperty],
-                rightSide = _.get(b, key); // b[col.objectProperty];
+                let leftSide = _.get(a, key),
+                rightSide = _.get(b, key);
 
                 if (leftSide.constructor === String) {
                     // Lower case it for better comparison
                     leftSide = leftSide.toLowerCase();
                 }
                 if (rightSide.constructor === String) {
-                    // Again, lower case it
+                    // Lower case it for better comparison
                     rightSide = rightSide.toLowerCase();
                 }
                 if (order === 'ASC') {
@@ -150,24 +160,32 @@ const Desserts = () => {
 
     const resetData = async (e: SyntheticEvent) => {
         e.preventDefault();
-        const desserts = await resetDessetsDataMutation();
-        setDessertsState(desserts.data?.resetDesserts);
+        if (dessertsState.length) {
+            const desserts = await resetDessetsDataMutation();
+            setDessertsState(desserts.data?.resetDesserts);
+            setSelectedIndexes([]);
+        }
     }
     let deleteButtonClassNames = 'bw1 mr2 o-50 br2 bg-gray black pa1 tc ttu tracked';
     if (selectedIndexes.length) {
         deleteButtonClassNames = 'bw1 pointer mr2 glow br2 bg-blue white pa1 tc ttu tracked';
     }
+
+    let resetDataButtonClassNames = 'bw1 fr mt3 br2 bg-gray o-50 white pa1 mr2 tc ttu tracked';
+    if (dessertsState.length) {
+        resetDataButtonClassNames = 'bw1 fr mt3 pointer br2 bg-green dim white pa1 mr2 tc ttu tracked';
+    }
     return (
         <div className='ma2 w-50 center'>
             <div>
-                <h2 className="gray dib">Nutrition List</h2>
+                <h2 className='gray dib'>Nutrition List</h2>
                 <button
                     type='button'
-                    className='bw1 fr mt3 pointer br2 dim bg-green white pa1 mr2 tc ttu tracked'
+                    className={resetDataButtonClassNames}
                     onClick={resetData}>Reset Data</button>
             </div>
-            <div className="flex items-center bg-light-pink h3">
-                <span className="hot-pink b flex-auto ml2">{selectedIndexes.length} Selected</span>
+            <div className='flex items-center bg-light-pink h3'>
+                <span className='hot-pink b flex-auto ml2'>{selectedIndexes.length} Selected</span>
                 <div className='fr mb2'>
                     <button
                         type='button'
@@ -185,7 +203,7 @@ const Desserts = () => {
             {dessertsState.length ? <table className='collapse ba br2 b--black-10 pv2 ph3 w-100'>
                 <thead>
                     <tr className='striped--light-gray'>
-                        <th className="tl pv2 ph3">
+                        <th className='tl pv2 ph3'>
                             <input
                                 type='checkbox'
                                 checked={selectAll}
@@ -209,7 +227,7 @@ const Desserts = () => {
                         )
                     })}
                 </tbody>
-            </table> : false}
+            </table> : <div className='bg-washed-yellow ba br1 orange pa1'><span>There are no Nutrition Data available. Click <span className='b blue underline-hover pointer' onClick={toggleAddDessert}>Add Dessert</span> to add data.</span></div>}
             {showDessertAdd ? <AddDessert addDessertCallback={addDessert} closeAddDessert={closeAddDessertDialog} /> : false}
         </div>
     );

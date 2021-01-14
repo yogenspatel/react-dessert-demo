@@ -3,11 +3,9 @@ import { Dessert } from '../../models/models';
 
 const DessertRow = (props: any) => {
     const rowData: Dessert = props.rowData;
-    console.log('Props in row', props.rowData);
     const [rowSelected, setRowSelected] = useState(false);
     const selectedIndexes: Array<number> = props.selectedIndexes;
     const handleCheckChange = (e: SyntheticEvent) => {
-        console.log('In handle check change', rowData);
         setRowSelected(!rowSelected);
         props.selectedIndexCallback(rowData.id, !rowSelected);
     }

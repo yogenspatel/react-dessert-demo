@@ -1,52 +1,12 @@
 import React, { SyntheticEvent, useState } from 'react'
+import { FormFieldData } from '../../data/dessertFormData';
 import { FormDessertField, FormVal } from '../../models/models';
 import Field from '../Field';
 
 const AddDessert = (props: any) => {
     const [values, setValues]: [FormVal, any] = useState({});
     const [validForm, setValidForm] = useState(false);
-    const FormFieldData: Array<FormDessertField> = [
-        {
-            'component': 'text',
-            'label': 'Dessert Name',
-            'type': 'text',
-            'required': true,
-            'fieldType': 'string',
-            'valid': false
-        },
-        {
-            'component': 'text',
-            'label': 'Calories',
-            'type': 'text',
-            'required': true,
-            'fieldType': 'number',
-            'valid': false
-        },
-        {
-            'component': 'text',
-            'label': 'Fat',
-            'type': 'text',
-            'required': true,
-            'fieldType': 'number',
-            'valid': false
-        },
-        {
-            'component': 'text',
-            'label': 'Carbs',
-            'type': 'text',
-            'required': true,
-            'fieldType': 'number',
-            'valid': false
-        },
-        {
-            'component': 'text',
-            'label': 'Protein',
-            'type': 'text',
-            'required': true,
-            'fieldType': 'number',
-            'valid': false
-        }
-    ];
+    
 
     const [, setCurrentFormData] = useState(FormFieldData);
     const onSubmit = (e: SyntheticEvent) => {

@@ -1,7 +1,7 @@
 import React, { SyntheticEvent, useEffect, useState } from 'react';
 import { Dessert } from '../../models/models';
 
-const DessertRow = ({ rowData, selectedIndexes, selectedIndexCallback }: {rowData: Dessert, selectedIndexes: Array<number>, selectedIndexCallback: Function}) => {
+const DessertRow = ({ rowData, selectedIndexes = [], selectedIndexCallback }: {rowData: Dessert, selectedIndexes: Array<number>, selectedIndexCallback: Function}) => {
     const [rowSelected, setRowSelected] = useState(false);
     const handleCheckChange = (e: SyntheticEvent) => {
         setRowSelected(!rowSelected);

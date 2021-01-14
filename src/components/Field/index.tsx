@@ -1,13 +1,8 @@
 import React, { useContext, useState } from 'react';
 import { DessertsContext } from '../../contexts/DessertList';
 import { FormDessertField, FormVal } from '../../models/models';
-// const dessertNameIndex = dessertsState.findIndex(dessert => dessert.name.toLowerCase() === newValArrayObject[0].toLowerCase());
-//         if (dessertNameIndex >= 0) {
-//             setErrorMsg('Duplicate Dessert name is not allowed');
-//         } else {
-//             setErrorMsg('');
-//         }
-const Field = ({ index, field, fieldChanged, value = ''}: {index: string, field: FormDessertField, fieldChanged: Function, value: string}) => {
+
+const Field = ({ index = '', field, fieldChanged, value = ''}: {index: string, field: FormDessertField, fieldChanged: Function, value: string}) => {
     const desserts = useContext(DessertsContext);
     const checkValidation = (value: string, field: FormDessertField): boolean => {
         if (field.fieldType === 'string') {

@@ -1,14 +1,21 @@
 ## To set up the project in local env
 ### Go to project's root directory
+## To run graphql server
+1. Go to the `graphql` directory - `cd graphql`
+2. `npm install`
+3. Go back to projects root directory - `cd ..` 
+4. `npm run graphqlserver`
+
+## To run app
 1. `npm install`
 2. `npm run start`
-### Open another tab/window and run graphql server
-3. `npm run graphqlserver`
+ 
 
-Runs the app in the development mode.\
+Runs the app in the development mode.
 - Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-- Open [http://localhost:4000/graphql] (http://localhost:4000/graphql) to run graphql playground in the local browser.
+- Open [http://localhost:4000/graphql](http://localhost:4000/graphql) to run graphql playground in the local browser.
 
+# Note: You must run graphQL server in order to work app.
 
 ## Uses Following Tech Stack
 1. React / React Hooks

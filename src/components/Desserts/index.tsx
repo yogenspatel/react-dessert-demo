@@ -4,6 +4,7 @@ import { Dessert, FormVal, SortBy, SortOrderTypes } from '../../models/models';
 import AddDessert from '../AddDessert';
 import DessertRow from '../DessertRow';
 import _ from 'lodash';
+import { DessertsContext } from '../../contexts/DessertList';
 
 const Desserts = () => {
     const { data, loading, error } = useGetAllDessertsQuery();
@@ -14,7 +15,6 @@ const Desserts = () => {
     const [selectedIndexes, setSelectedIndexes]: [Array<number>, any] = useState([]);
     const [showDessertAdd, setShowDessertAdd] = useState(false);
     const desserts: Array<any> = data?.desserts || [];
-    const [errorMsg, setErrorMsg] = useState('');
     const [sortByKey, setSortByKey]: [SortBy, any] = useState({key: '', order: 'ASC'});
     const [selectAll, setSelectAll] = useState(false);
     useEffect(() => {
@@ -60,19 +60,13 @@ const Desserts = () => {
     const addDessert = async (newVal: FormVal) => {
         setShowDessertAdd(false);
         const newValArrayObject = Object.values(newVal);
-        const dessertNameIndex = dessertsState.findIndex(dessert => dessert.name.toLowerCase() === newValArrayObject[0].toLowerCase());
-        if (dessertNameIndex >= 0) {
-            setErrorMsg('Duplicate Dessert name is not allowed');
-        } else {
-            setErrorMsg('');
-        }
         const dessertObject: Dessert = {
             id: dessertsState.length + 1,
             name: newValArrayObject[0],
-            calories: parseInt(newValArrayObject[1]),
-            fat: parseInt(newValArrayObject[2]),
-            carbs: parseInt(newValArrayObject[3]),
-            protien: parseInt(newValArrayObject[4])
+            calories: +newValArrayObject[1],
+            fat: +newValArrayObject[2],
+            carbs: +newValArrayObject[3],
+            protien: +newValArrayObject[4]
         };
         const addDessertData = await addDessertMutation({
             variables: {
@@ -177,60 +171,61 @@ const Desserts = () => {
         resetDataButtonClassNames = 'bw1 fr mt3 pointer br2 bg-green dim white pa1 mr2 tc ttu tracked';
     }
     return (
-        <div className='ma2 w-50 center'>
-            <div>
-                <h2 className='gray dib'>Nutrition List</h2>
-                <button
-                    type='button'
-                    className={resetDataButtonClassNames}
-                    onClick={resetData}>Reset Data</button>
-            </div>
-            <div className='flex items-center bg-light-pink h3'>
-                <span className='hot-pink b flex-auto ml2'>{selectedIndexes.length} Selected</span>
-                <div className='fr mb2'>
+        <DessertsContext.Provider value={dessertsState}>
+            <div className='ma2 w-50 center'>
+                <div>
+                    <h2 className='gray dib'>Nutrition List</h2>
                     <button
                         type='button'
-                        className='bw1 pointer br2 dim bg-blue white pa1 mr2 tc ttu tracked'
-                        onClick={toggleAddDessert}>Add Dessert</button>
-
-                    <button
-                        type='button'
-                        className={deleteButtonClassNames}
-                        onClick={deleteSelectedDesserts}>Delete</button>
+                        className={resetDataButtonClassNames}
+                        onClick={resetData}>Reset Data</button>
                 </div>
+                <div className='flex items-center bg-light-pink h3'>
+                    <span className='hot-pink b flex-auto ml2'>{selectedIndexes.length} Selected</span>
+                    <div className='fr mb2'>
+                        <button
+                            type='button'
+                            className='bw1 pointer br2 dim bg-blue white pa1 mr2 tc ttu tracked'
+                            onClick={toggleAddDessert}>Add Dessert</button>
+
+                        <button
+                            type='button'
+                            className={deleteButtonClassNames}
+                            onClick={deleteSelectedDesserts}>Delete</button>
+                    </div>
+                </div>
+                <div className='cb mb2'></div>
+                {dessertsState.length ? <table className='collapse ba br2 b--black-10 pv2 ph3 w-100'>
+                    <thead>
+                        <tr className='striped--light-gray'>
+                            <th className='tl pv2 ph3'>
+                                <input
+                                    type='checkbox'
+                                    checked={selectAll}
+                                    onChange={handleSelectAll} /></th>
+                            <th className='pointer pv2 ph3 tl f6 fw6 ttu' onClick={e => sortBy('name')}>
+                                Dessert (100g serving) {renderSortByArrows('name')}</th>
+                            <th className='pointer tl f6 ttu fw6 pv2 ph3' onClick={e => sortBy('calories')}>
+                                Calories {renderSortByArrows('calories')}</th>
+                            <th className='pointer tl f6 ttu fw6 pv2 ph3' onClick={e => sortBy('fat')}>
+                                Fat (g) {renderSortByArrows('fat')}</th>
+                            <th className='pointer tl f6 ttu fw6 pv2 ph3' onClick={e => sortBy('carbs')}>
+                                Carbs (g) {renderSortByArrows('carbs')}</th>
+                            <th className='pointer tl f6 ttu fw6 pv2 ph3' onClick={e => sortBy('protien')}>
+                                Protien (g) {renderSortByArrows('protien')}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {dessertsState.map((dessertRow, index) => {
+                            return (
+                                <DessertRow key={index} rowData={dessertRow} selectedIndexCallback={selectedIndex} selectedIndexes={selectedIndexes} />
+                            )
+                        })}
+                    </tbody>
+                </table> : <div className='bg-washed-yellow ba br1 orange pa1'><span>There are no Nutrition Data available. Click <span className='b blue underline-hover pointer' onClick={toggleAddDessert}>Add Dessert</span> to add data.</span></div>}
+                {showDessertAdd ? <AddDessert addDessertCallback={addDessert} closeAddDessert={closeAddDessertDialog} /> : false}
             </div>
-            {errorMsg ? <span className='red cb ba pa1 br2 db'>{errorMsg}</span> : false}
-            <div className='cb mb2'></div>
-            {dessertsState.length ? <table className='collapse ba br2 b--black-10 pv2 ph3 w-100'>
-                <thead>
-                    <tr className='striped--light-gray'>
-                        <th className='tl pv2 ph3'>
-                            <input
-                                type='checkbox'
-                                checked={selectAll}
-                                onChange={handleSelectAll} /></th>
-                        <th className='pointer pv2 ph3 tl f6 fw6 ttu' onClick={e => sortBy('name')}>
-                            Dessert (100g serving) {renderSortByArrows('name')}</th>
-                        <th className='pointer tl f6 ttu fw6 pv2 ph3' onClick={e => sortBy('calories')}>
-                            Calories {renderSortByArrows('calories')}</th>
-                        <th className='pointer tl f6 ttu fw6 pv2 ph3' onClick={e => sortBy('fat')}>
-                            Fat (g) {renderSortByArrows('fat')}</th>
-                        <th className='pointer tl f6 ttu fw6 pv2 ph3' onClick={e => sortBy('carbs')}>
-                            Carbs (g) {renderSortByArrows('carbs')}</th>
-                        <th className='pointer tl f6 ttu fw6 pv2 ph3' onClick={e => sortBy('protien')}>
-                            Protien (g) {renderSortByArrows('protien')}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {dessertsState.map((dessertRow, index) => {
-                        return (
-                            <DessertRow key={index} rowData={dessertRow} selectedIndexCallback={selectedIndex} selectedIndexes={selectedIndexes} />
-                        )
-                    })}
-                </tbody>
-            </table> : <div className='bg-washed-yellow ba br1 orange pa1'><span>There are no Nutrition Data available. Click <span className='b blue underline-hover pointer' onClick={toggleAddDessert}>Add Dessert</span> to add data.</span></div>}
-            {showDessertAdd ? <AddDessert addDessertCallback={addDessert} closeAddDessert={closeAddDessertDialog} /> : false}
-        </div>
+        </DessertsContext.Provider>
     );
 }
 

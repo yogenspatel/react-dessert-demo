@@ -25,3 +25,4 @@ Runs the app in the development mode.\
 5. Reset the mutated data in graphql server
 6. Responsive UI
 7. Form fields validation
+8. Uses Context to pass Dessert List to the deep nested child component

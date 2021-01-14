@@ -19,8 +19,9 @@ Runs the app in the development mode.\
 6. GraphQL (Apollo server)
 ## Implemented Following features
 1. UI Table with selection 
-2. Add Dessert Feature  ( Mutation Query )
-3. Delete Dessert Feature ( Mutation Query )
+2. Added Dessert Feature using Mutation Query
+3. Deleted Dessert Feature using Mutation Query
 4. Sort By Desserts, Calories, Fat, Carbs, Protein
 5. Reset the mutated data in graphql server
 6. Responsive UI
+7. Form fields validation

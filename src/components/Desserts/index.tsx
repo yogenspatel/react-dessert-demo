@@ -91,6 +91,7 @@ const Desserts = () => {
                 }
             });
             setDessertsState(deleteDessertData.data?.removeDessert);
+            setSelectedIndexes([]);
         }
     }
 

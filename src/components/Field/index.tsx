@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { DessertsContext } from '../../contexts/DessertList';
-import { FormDessertField, FormVal } from '../../models/models';
+import { FormDessertField } from '../../models/models';
 
 const Field = ({ index = '', field, fieldChanged, value = ''}: {index: string, field: FormDessertField, fieldChanged: Function, value: string}) => {
     const desserts = useContext(DessertsContext);
@@ -35,7 +35,7 @@ const Field = ({ index = '', field, fieldChanged, value = ''}: {index: string, f
                 id={index}
                 name={field.label}
                 value={value}
-                className='input-reset ba b--black-20 pa2 mb2 dib w-50'
+                className='input-reset ba b--black-20 pa2 mb2 dib w-100'
                 onChange={e => {
                     const isFieldValid = checkValidation(e.target.value, field);
                     return fieldChanged(index, e.target.value, isFieldValid);

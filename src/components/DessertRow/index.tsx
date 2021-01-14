@@ -14,7 +14,7 @@ const DessertRow = ({ rowData, selectedIndexes = [], selectedIndexCallback }: {r
         } else {
             setRowSelected(false);
         }
-    }, [selectedIndexes]);
+    }, [selectedIndexes, rowData.id]);
     return (
     <tr className='striped--light-gray'>
         <td className='pv2 ph3'>

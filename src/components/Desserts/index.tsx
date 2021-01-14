@@ -5,17 +5,27 @@ import AddDessert from '../AddDessert';
 import DessertRow from '../DessertRow';
 import _ from 'lodash';
 import { DessertsContext } from '../../contexts/DessertList';
+import Model from '../Model';
 
 const Desserts = () => {
     const { data, loading, error } = useGetAllDessertsQuery();
+    // Hook for the GraphQL Mutation to add dessert
     const [addDessertMutation] = useAddDessertMutation();
+    // Hook for the GraphQL Mutation to remove desserts
     const [deleteDessertMutation] = useRemoveDessertMutation();
+    // Hook for the GraphQL Mutation to reset desserts data
     const [resetDessetsDataMutation] = useResetDessertDataMutation()
+    // Hook to maintain state or set state for the list of dessert
     const [dessertsState, setDessertsState]: [Array<Dessert>, Function] = useState([]);
+    // Hook to maintain state or set state for the selected desserts
     const [selectedIndexes, setSelectedIndexes]: [Array<number>, Function] = useState([]);
-    const [showDessertAdd, setShowDessertAdd] = useState(false);
+    // Hook to maintain state or set state for the sort (key, order)
     const [sortByKey, setSortByKey]: [SortBy, Function] = useState({key: '', order: 'ASC'});
+    // Hook to maintain state or set state for the select all desserts data
     const [selectAll, setSelectAll] = useState(false);
+    // Hook to maintain state or set state to show/hide model
+    const [showDessertAddModel, setShowDessertAddModel] = useState(false);
+    
     useEffect(() => {
         setDessertsState(data?.desserts || []);
     }, [data]);
@@ -52,11 +62,13 @@ const Desserts = () => {
 
     const toggleAddDessert = (e: SyntheticEvent) => {
         e.preventDefault();
-        setShowDessertAdd(!showDessertAdd);
+        //  setShowDessertAdd(!showDessertAdd);
+        setShowDessertAddModel(!showDessertAddModel);
     }
 
     const addDessert = async (newVal: FormVal) => {
-        setShowDessertAdd(false);
+        setShowDessertAddModel(false);
+        // setShowDessertAdd(false);
         const newValArrayObject = Object.values(newVal);
         const dessertObject: Dessert = {
             id: dessertsState.length + 1,
@@ -138,10 +150,6 @@ const Desserts = () => {
         return false;
     }
 
-    const closeAddDessertDialog = () => {
-        setShowDessertAdd(false);
-    }
-
     const handleSelectAll = () => {
         setSelectAll(!selectAll);
         if (!selectAll) {
@@ -158,6 +166,10 @@ const Desserts = () => {
             setDessertsState(desserts.data?.resetDesserts);
             setSelectedIndexes([]);
         }
+    }
+
+    const closeDessertAddModel = () => {
+        setShowDessertAddModel(false);
     }
     let deleteButtonClassNames = 'bw1 mr2 o-50 br2 bg-gray black pa1 tc ttu tracked';
     if (selectedIndexes.length) {
@@ -221,7 +233,12 @@ const Desserts = () => {
                         })}
                     </tbody>
                 </table> : <div className='bg-washed-yellow ba br1 orange pa1'><span>There are no Nutrition Data available. Click <span className='b blue underline-hover pointer' onClick={toggleAddDessert}>Add Dessert</span> to add data.</span></div>}
-                {showDessertAdd ? <AddDessert addDessertCallback={addDessert} closeAddDessert={closeAddDessertDialog} /> : false}
+                <Model
+                    show={showDessertAddModel}
+                    closeModel={closeDessertAddModel}
+                    title='Add Dessert Nutrition'>
+                    <AddDessert addDessertCallback={addDessert} />
+                </Model>
             </div>
         </DessertsContext.Provider>
     );

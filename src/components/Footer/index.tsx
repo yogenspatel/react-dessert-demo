@@ -2,7 +2,7 @@ import React from 'react';
 
 const Footer = () => {
     return (
-        <div className='tc pv4 pv5-ns bg-blue white'>
+        <div className='tc pv1 pv1-ns bg-blue white'>
             © Yogen Patel
         </div>
     );

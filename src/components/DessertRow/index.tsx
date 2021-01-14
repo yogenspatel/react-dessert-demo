@@ -1,13 +1,11 @@
 import React, { SyntheticEvent, useEffect, useState } from 'react';
 import { Dessert } from '../../models/models';
 
-const DessertRow = (props: any) => {
-    const rowData: Dessert = props.rowData;
+const DessertRow = ({ rowData, selectedIndexes, selectedIndexCallback }: {rowData: Dessert, selectedIndexes: Array<number>, selectedIndexCallback: Function}) => {
     const [rowSelected, setRowSelected] = useState(false);
-    const selectedIndexes: Array<number> = props.selectedIndexes;
     const handleCheckChange = (e: SyntheticEvent) => {
         setRowSelected(!rowSelected);
-        props.selectedIndexCallback(rowData.id, !rowSelected);
+        selectedIndexCallback(rowData.id, !rowSelected);
     }
     useEffect(() => {
         const foundIndex = selectedIndexes.findIndex(index => index === rowData.id);

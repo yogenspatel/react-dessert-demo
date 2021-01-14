@@ -11,14 +11,13 @@ const Desserts = () => {
     const [addDessertMutation] = useAddDessertMutation();
     const [deleteDessertMutation] = useRemoveDessertMutation();
     const [resetDessetsDataMutation] = useResetDessertDataMutation()
-    const [dessertsState, setDessertsState]: [Array<Dessert>, any] = useState([]);
-    const [selectedIndexes, setSelectedIndexes]: [Array<number>, any] = useState([]);
+    const [dessertsState, setDessertsState]: [Array<Dessert>, Function] = useState([]);
+    const [selectedIndexes, setSelectedIndexes]: [Array<number>, Function] = useState([]);
     const [showDessertAdd, setShowDessertAdd] = useState(false);
-    const desserts: Array<any> = data?.desserts || [];
-    const [sortByKey, setSortByKey]: [SortBy, any] = useState({key: '', order: 'ASC'});
+    const [sortByKey, setSortByKey]: [SortBy, Function] = useState({key: '', order: 'ASC'});
     const [selectAll, setSelectAll] = useState(false);
     useEffect(() => {
-        setDessertsState(desserts);
+        setDessertsState(data?.desserts || []);
     }, [data]);
     if (loading) {
         return <div>Loading</div>;
@@ -49,7 +48,6 @@ const Desserts = () => {
                 return newSelectedIndexes;
             }); 
         }
-        console.log('In selectedIndex: ', selectedIndexes);
     }
 
     const toggleAddDessert = (e: SyntheticEvent) => {

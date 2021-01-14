@@ -1,19 +1,17 @@
 import React, { useContext, useState } from 'react';
 import { DessertsContext } from '../../contexts/DessertList';
-import { FormDessertField } from '../../models/models';
+import { FormDessertField, FormVal } from '../../models/models';
 // const dessertNameIndex = dessertsState.findIndex(dessert => dessert.name.toLowerCase() === newValArrayObject[0].toLowerCase());
 //         if (dessertNameIndex >= 0) {
 //             setErrorMsg('Duplicate Dessert name is not allowed');
 //         } else {
 //             setErrorMsg('');
 //         }
-const Field = ({ index, field, fieldChanged, type, value = ''}: any) => {
+const Field = ({ index, field, fieldChanged, value = ''}: {index: string, field: FormDessertField, fieldChanged: Function, value: string}) => {
     const desserts = useContext(DessertsContext);
     const checkValidation = (value: string, field: FormDessertField): boolean => {
-        console.log('In check validation: ', field, value);
         if (field.fieldType === 'string') {
             const dessertNameIndex = desserts.findIndex(dessert => dessert.name.toLowerCase() === value.toLowerCase());
-            console.log('In index: ', dessertNameIndex);
             if (dessertNameIndex >= 0) {
                 setErrorMsg('Duplicate Dessert name is not allowed');
                 return false;
@@ -38,9 +36,9 @@ const Field = ({ index, field, fieldChanged, type, value = ''}: any) => {
             <label htmlFor={index} className='f6 b db mb2'>{field.label} {field.required ? <span className='red'>*</span> : false}</label>
             {errorMsg ? <span className='ba db bw1 mb2 br2 pa1 fw1 red'>{errorMsg}</span> : false}
             <input
-                type={type || field.component}
+                type={field.type || field.component}
                 id={index}
-                name={field.name}
+                name={field.label}
                 value={value}
                 className='input-reset ba b--black-20 pa2 mb2 dib w-50'
                 onChange={e => {

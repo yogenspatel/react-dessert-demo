@@ -3,8 +3,8 @@ import { FormFieldData } from '../../data/dessertFormData';
 import { FormDessertField, FormVal } from '../../models/models';
 import Field from '../Field';
 
-const AddDessert = (props: any) => {
-    const [values, setValues]: [FormVal, any] = useState({});
+const AddDessert = ({ addDessertCallback, closeAddDessert }: {addDessertCallback: Function, closeAddDessert: any}) => {
+    const [values, setValues]: [FormVal, Function] = useState({});
     const [validForm, setValidForm] = useState(false);
     
 
@@ -12,7 +12,7 @@ const AddDessert = (props: any) => {
     const onSubmit = (e: SyntheticEvent) => {
         e.preventDefault();
         if (validForm) {
-            props.addDessertCallback(values);
+            addDessertCallback(values);
         }
     };
 
@@ -41,7 +41,7 @@ const AddDessert = (props: any) => {
             
             <span
                 className='ba pointer tc dim br4 db w1 h1 absolute top-0 right-0 mr1 mt1'
-                onClick={props.closeAddDessert}>
+                onClick={closeAddDessert}>
                     &#10006;</span>
             <div className='mw5 mw7-ns center pa3 ph5-ns'>
                 <p className='bg-orange ba white pa1'>Please fill all details before you submit</p>
@@ -49,7 +49,7 @@ const AddDessert = (props: any) => {
                     return (
                         <Field
                             key={i}
-                            index={i}
+                            index={`${i}`}
                             field={field}
                             fieldChanged={fieldChanged}
                             value={values[i]}

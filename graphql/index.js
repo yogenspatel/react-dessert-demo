@@ -36,6 +36,7 @@ const typeDefs = gql`
   type Mutation {
     addDessert(dessert: DessertInput): [dessert]
     removeDessert(dessertIds: [Int]): [dessert]
+    resetDesserts: [dessert]
   }
 `;
 
@@ -77,6 +78,10 @@ const resolvers = {
             desserts.splice(findDessertIndex, 1);
           }
         });
+        return desserts;
+      },
+      resetDesserts: () => {
+        desserts.length = 0;
         return desserts;
       }
     }

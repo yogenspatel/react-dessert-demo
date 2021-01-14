@@ -25,3 +25,17 @@ export const REMOVE_DESSERTS_BY_IDS = gql `
       }
   }
 `;
+
+
+export const RESET_DESSERTS_DATA = gql `
+  mutation resetDessertData {
+    resetDesserts {
+        id
+        name
+        calories
+        fat
+        carbs
+        protien
+      }
+  }
+`;

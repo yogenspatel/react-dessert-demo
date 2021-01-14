@@ -1,5 +1,5 @@
 import React, { SyntheticEvent, useEffect, useState } from 'react';
-import { useAddDessertMutation, useGetAllDessertsQuery, useRemoveDessertMutation } from '../../generated/graphql';
+import { useAddDessertMutation, useGetAllDessertsQuery, useRemoveDessertMutation, useResetDessertDataMutation } from '../../generated/graphql';
 import { Dessert, FormVal, SortBy, SortOrderTypes } from '../../models/models';
 import AddDessert from '../AddDessert';
 import DessertRow from '../DessertRow';
@@ -9,6 +9,7 @@ const Desserts = () => {
     const { data, loading, error } = useGetAllDessertsQuery();
     const [addDessertMutation] = useAddDessertMutation();
     const [deleteDessertMutation] = useRemoveDessertMutation();
+    const [resetDessetsDataMutation] = useResetDessertDataMutation()
     const [dessertsState, setDessertsState]: [Array<Dessert>, any] = useState([]);
     const [selectedIndexes, setSelectedIndexes]: [Array<number>, any] = useState([]);
     const [showDessertAdd, setShowDessertAdd] = useState(false);
@@ -147,63 +148,71 @@ const Desserts = () => {
         }
     }
 
-    if (dessertsState?.length) {
-        let deleteButtonClassNames = 'bw1 pointer mr2 o-50 br2 bg-gray black pa1 tc ttu tracked';
-        if (selectedIndexes.length) {
-            deleteButtonClassNames = 'bw1 pointer mr2 glow br2 bg-blue white pa1 tc ttu tracked';
-        }
-        return (
-            <div className='ma2'>
-                <div className="flex items-center bg-light-pink h3 w-50">
-                    <span className="hot-pink b flex-auto ml2">{selectedIndexes.length} Selected</span>
-                    <div className='fr mb2'>
-                        <button
-                            type='button'
-                            className='bw1 pointer br2 dim bg-blue white pa1 mr2 tc ttu tracked'
-                            onClick={toggleAddDessert}>Add Dessert</button>
-
-                        <button
-                            type='button'
-                            className={deleteButtonClassNames}
-                            onClick={deleteSelectedDesserts}>Delete</button>
-                    </div>
-                </div>
-                {errorMsg ? <span className='red cb ba pa1 br2 db'>{errorMsg}</span> : false}
-                <div className='cb mb2'></div>
-                <table className='collapse ba br2 b--black-10 pv2 ph3 w-50'>
-                    <thead>
-                        <tr className='striped--light-gray'>
-                            <th className="tl pv2 ph3">
-                                <input
-                                    type='checkbox'
-                                    checked={selectAll}
-                                    onChange={handleSelectAll} /></th>
-                            <th className='pointer pv2 ph3 tl f6 fw6 ttu' onClick={e => sortBy('name')}>
-                                Dessert (100g serving) {renderSortByArrows('name')}</th>
-                            <th className='pointer tl f6 ttu fw6 pv2 ph3' onClick={e => sortBy('calories')}>
-                                Calories {renderSortByArrows('calories')}</th>
-                            <th className='pointer tl f6 ttu fw6 pv2 ph3' onClick={e => sortBy('fat')}>
-                                Fat (g) {renderSortByArrows('fat')}</th>
-                            <th className='pointer tl f6 ttu fw6 pv2 ph3' onClick={e => sortBy('carbs')}>
-                                Carbs (g) {renderSortByArrows('carbs')}</th>
-                            <th className='pointer tl f6 ttu fw6 pv2 ph3' onClick={e => sortBy('protien')}>
-                                Protien (g) {renderSortByArrows('protien')}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {dessertsState.map((dessertRow, index) => {
-                            return (
-                                <DessertRow key={index} rowData={dessertRow} selectedIndexCallback={selectedIndex} selectedIndexes={selectedIndexes} />
-                            )
-                        })}
-                    </tbody>
-                </table>
-                {showDessertAdd ? <AddDessert addDessertCallback={addDessert} closeAddDessert={closeAddDessertDialog} /> : false}
-            </div>
-        );
+    const resetData = async (e: SyntheticEvent) => {
+        e.preventDefault();
+        const desserts = await resetDessetsDataMutation();
+        setDessertsState(desserts.data?.resetDesserts);
     }
-    return <div></div>;
+    let deleteButtonClassNames = 'bw1 mr2 o-50 br2 bg-gray black pa1 tc ttu tracked';
+    if (selectedIndexes.length) {
+        deleteButtonClassNames = 'bw1 pointer mr2 glow br2 bg-blue white pa1 tc ttu tracked';
+    }
+    return (
+        <div className='ma2 w-50 center'>
+            <div>
+                <h2 className="gray dib">Nutrition List</h2>
+                <button
+                    type='button'
+                    className='bw1 fr mt3 pointer br2 dim bg-green white pa1 mr2 tc ttu tracked'
+                    onClick={resetData}>Reset Data</button>
+            </div>
+            <div className="flex items-center bg-light-pink h3">
+                <span className="hot-pink b flex-auto ml2">{selectedIndexes.length} Selected</span>
+                <div className='fr mb2'>
+                    <button
+                        type='button'
+                        className='bw1 pointer br2 dim bg-blue white pa1 mr2 tc ttu tracked'
+                        onClick={toggleAddDessert}>Add Dessert</button>
 
+                    <button
+                        type='button'
+                        className={deleteButtonClassNames}
+                        onClick={deleteSelectedDesserts}>Delete</button>
+                </div>
+            </div>
+            {errorMsg ? <span className='red cb ba pa1 br2 db'>{errorMsg}</span> : false}
+            <div className='cb mb2'></div>
+            {dessertsState.length ? <table className='collapse ba br2 b--black-10 pv2 ph3 w-100'>
+                <thead>
+                    <tr className='striped--light-gray'>
+                        <th className="tl pv2 ph3">
+                            <input
+                                type='checkbox'
+                                checked={selectAll}
+                                onChange={handleSelectAll} /></th>
+                        <th className='pointer pv2 ph3 tl f6 fw6 ttu' onClick={e => sortBy('name')}>
+                            Dessert (100g serving) {renderSortByArrows('name')}</th>
+                        <th className='pointer tl f6 ttu fw6 pv2 ph3' onClick={e => sortBy('calories')}>
+                            Calories {renderSortByArrows('calories')}</th>
+                        <th className='pointer tl f6 ttu fw6 pv2 ph3' onClick={e => sortBy('fat')}>
+                            Fat (g) {renderSortByArrows('fat')}</th>
+                        <th className='pointer tl f6 ttu fw6 pv2 ph3' onClick={e => sortBy('carbs')}>
+                            Carbs (g) {renderSortByArrows('carbs')}</th>
+                        <th className='pointer tl f6 ttu fw6 pv2 ph3' onClick={e => sortBy('protien')}>
+                            Protien (g) {renderSortByArrows('protien')}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {dessertsState.map((dessertRow, index) => {
+                        return (
+                            <DessertRow key={index} rowData={dessertRow} selectedIndexCallback={selectedIndex} selectedIndexes={selectedIndexes} />
+                        )
+                    })}
+                </tbody>
+            </table> : false}
+            {showDessertAdd ? <AddDessert addDessertCallback={addDessert} closeAddDessert={closeAddDessertDialog} /> : false}
+        </div>
+    );
 }
 
 export default Desserts;

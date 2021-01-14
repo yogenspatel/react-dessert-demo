@@ -44,6 +44,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   addDessert?: Maybe<Array<Maybe<Dessert>>>;
   removeDessert?: Maybe<Array<Maybe<Dessert>>>;
+  resetDesserts?: Maybe<Array<Maybe<Dessert>>>;
 };
 
 
@@ -94,6 +95,17 @@ export type RemoveDessertMutationVariables = Exact<{
 export type RemoveDessertMutation = (
   { __typename?: 'Mutation' }
   & { removeDessert?: Maybe<Array<Maybe<(
+    { __typename?: 'dessert' }
+    & Pick<Dessert, 'id' | 'name' | 'calories' | 'fat' | 'carbs' | 'protien'>
+  )>>> }
+);
+
+export type ResetDessertDataMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ResetDessertDataMutation = (
+  { __typename?: 'Mutation' }
+  & { resetDesserts?: Maybe<Array<Maybe<(
     { __typename?: 'dessert' }
     & Pick<Dessert, 'id' | 'name' | 'calories' | 'fat' | 'carbs' | 'protien'>
   )>>> }
@@ -211,3 +223,39 @@ export function useRemoveDessertMutation(baseOptions?: Apollo.MutationHookOption
 export type RemoveDessertMutationHookResult = ReturnType<typeof useRemoveDessertMutation>;
 export type RemoveDessertMutationResult = Apollo.MutationResult<RemoveDessertMutation>;
 export type RemoveDessertMutationOptions = Apollo.BaseMutationOptions<RemoveDessertMutation, RemoveDessertMutationVariables>;
+export const ResetDessertDataDocument = gql`
+    mutation resetDessertData {
+  resetDesserts {
+    id
+    name
+    calories
+    fat
+    carbs
+    protien
+  }
+}
+    `;
+export type ResetDessertDataMutationFn = Apollo.MutationFunction<ResetDessertDataMutation, ResetDessertDataMutationVariables>;
+
+/**
+ * __useResetDessertDataMutation__
+ *
+ * To run a mutation, you first call `useResetDessertDataMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useResetDessertDataMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [resetDessertDataMutation, { data, loading, error }] = useResetDessertDataMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useResetDessertDataMutation(baseOptions?: Apollo.MutationHookOptions<ResetDessertDataMutation, ResetDessertDataMutationVariables>) {
+        return Apollo.useMutation<ResetDessertDataMutation, ResetDessertDataMutationVariables>(ResetDessertDataDocument, baseOptions);
+      }
+export type ResetDessertDataMutationHookResult = ReturnType<typeof useResetDessertDataMutation>;
+export type ResetDessertDataMutationResult = Apollo.MutationResult<ResetDessertDataMutation>;
+export type ResetDessertDataMutationOptions = Apollo.BaseMutationOptions<ResetDessertDataMutation, ResetDessertDataMutationVariables>;

@@ -1,5 +1,4 @@
 import React, { SyntheticEvent, useState } from 'react'
-import { useAddDessertMutation } from '../../generated/graphql';
 import { FormDessertField, FormVal } from '../../models/models';
 import Field from '../Field';
 
@@ -49,7 +48,7 @@ const AddDessert = (props: any) => {
         }
     ];
 
-    const [currentFormData, setCurrentFormData] = useState(FormFieldData);
+    const [, setCurrentFormData] = useState(FormFieldData);
     const onSubmit = (e: SyntheticEvent) => {
         e.preventDefault();
         if (validForm) {
@@ -67,7 +66,7 @@ const AddDessert = (props: any) => {
             currentFormData[fieldId].valid = valid;
             const notValidFields = currentFormData.filter(field => !field.valid);
             setValidForm(notValidFields.length ? false : true);
-            return [... currentFormData];
+            return [...currentFormData];
         });
     };
     let submitButtonClassNames = 'bw1 br2 pa1 w-100 white ';

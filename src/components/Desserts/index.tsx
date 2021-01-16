@@ -5,7 +5,8 @@ import AddDessert from '../AddDessert';
 import DessertRow from '../DessertRow';
 import _ from 'lodash';
 import { DessertsContext } from '../../contexts/DessertList';
-import Model from '../Model';
+import Model from '../Modal';
+import ModelDialog from '../ModalDialog';
 
 const Desserts = () => {
     const { data, loading, error } = useGetAllDessertsQuery();
@@ -23,8 +24,12 @@ const Desserts = () => {
     const [sortByKey, setSortByKey]: [SortBy, Function] = useState({key: '', order: 'ASC'});
     // Hook to maintain state or set state for the select all desserts data
     const [selectAll, setSelectAll] = useState(false);
-    // Hook to maintain state or set state to show/hide model
-    const [showDessertAddModel, setShowDessertAddModel] = useState(false);
+    // Hook to maintain state or set state to show/hide modal
+    const [showDessertAddModal, setShowDessertAddModal] = useState(false);
+    // Hook to maintain state or set state to show/hide delete confirm modal
+    const [showDessertDeleteConfirmModal, setShowDessertDeleteConfirmModal] = useState(false);
+    // Hook to maintain state or set state to show/hide reset confirm modal
+    const [showDessertResetConfirmModal, setShowDessertResetConfirmModal] = useState(false);
     
     useEffect(() => {
         setDessertsState(data?.desserts || []);
@@ -63,11 +68,11 @@ const Desserts = () => {
     const toggleAddDessert = (e: SyntheticEvent) => {
         e.preventDefault();
         //  setShowDessertAdd(!showDessertAdd);
-        setShowDessertAddModel(!showDessertAddModel);
+        setShowDessertAddModal(!showDessertAddModal);
     }
 
     const addDessert = async (newVal: FormVal) => {
-        setShowDessertAddModel(false);
+        setShowDessertAddModal(false);
         // setShowDessertAdd(false);
         const newValArrayObject = Object.values(newVal);
         const dessertObject: Dessert = {
@@ -88,15 +93,16 @@ const Desserts = () => {
 
     const deleteSelectedDesserts = async (e: SyntheticEvent) => {
         e.preventDefault();
-        if (selectedIndexes.length) {
-            const deleteDessertData = await deleteDessertMutation({
-                variables: {
-                    dessertIds: selectedIndexes
-                }
-            });
-            setDessertsState(deleteDessertData.data?.removeDessert);
-            setSelectedIndexes([]);
-        }
+        setShowDessertDeleteConfirmModal(false);
+        // if (selectedIndexes.length) {
+        const deleteDessertData = await deleteDessertMutation({
+            variables: {
+                dessertIds: selectedIndexes
+            }
+        });
+        setDessertsState(deleteDessertData.data?.removeDessert);
+        setSelectedIndexes([]);
+        // }
     }
 
     const sortBy = (key: string, order: SortOrderTypes = 'ASC') => {
@@ -161,15 +167,38 @@ const Desserts = () => {
 
     const resetData = async (e: SyntheticEvent) => {
         e.preventDefault();
-        if (dessertsState.length) {
+        setShowDessertResetConfirmModal(false);
+        // if (dessertsState.length) {
             const desserts = await resetDessetsDataMutation();
             setDessertsState(desserts.data?.resetDesserts);
             setSelectedIndexes([]);
-        }
+        // }
     }
 
     const closeDessertAddModel = () => {
-        setShowDessertAddModel(false);
+        setShowDessertAddModal(false);
+    }
+
+    const closeDessertDeleteConfirmModel = () => {
+        setShowDessertDeleteConfirmModal(false);
+    }
+
+    const closeDessertResetConfirmModel = () => {
+        setShowDessertResetConfirmModal(false);
+    }
+
+    const showDessertDeleteConfirmModelDialog = (e: SyntheticEvent) => {
+        e.preventDefault();
+        if (selectedIndexes.length) {
+            setShowDessertDeleteConfirmModal(true);
+        }
+    }
+
+    const showDessertResetConfirmModelDialog = (e: SyntheticEvent) => {
+        e.preventDefault();
+        if (dessertsState.length) {
+            setShowDessertResetConfirmModal(true);
+        }
     }
     let deleteButtonClassNames = 'bw1 mr2 o-50 br2 bg-gray black pa1 tc ttu tracked';
     if (selectedIndexes.length) {
@@ -188,7 +217,7 @@ const Desserts = () => {
                     <button
                         type='button'
                         className={resetDataButtonClassNames}
-                        onClick={resetData}>Reset Data</button>
+                        onClick={showDessertResetConfirmModelDialog}>Reset Data</button>
                 </div>
                 <div className='flex items-center bg-light-pink h3'>
                     <span className='hot-pink b flex-auto ml2'>{selectedIndexes.length} Selected</span>
@@ -201,7 +230,7 @@ const Desserts = () => {
                         <button
                             type='button'
                             className={deleteButtonClassNames}
-                            onClick={deleteSelectedDesserts}>Delete</button>
+                            onClick={showDessertDeleteConfirmModelDialog}>Delete</button>
                     </div>
                 </div>
                 <div className='cb mb2'></div>
@@ -234,11 +263,25 @@ const Desserts = () => {
                     </tbody>
                 </table> : <div className='bg-washed-yellow ba br1 orange pa1'><span>There are no Nutrition Data available. Click <span className='b blue underline-hover pointer' onClick={toggleAddDessert}>Add Dessert</span> to add data.</span></div>}
                 <Model
-                    show={showDessertAddModel}
+                    show={showDessertAddModal}
                     closeModel={closeDessertAddModel}
                     title='Add Dessert Nutrition'>
                     <AddDessert addDessertCallback={addDessert} />
                 </Model>
+
+                <ModelDialog
+                    show={showDessertDeleteConfirmModal}
+                    title='Delete Dessert(s)'
+                    content='Are you sure want to delete selected item(s)?'
+                    confirmCallBack={deleteSelectedDesserts}
+                    closeModelDialogCallback={closeDessertDeleteConfirmModel} />
+
+                <ModelDialog
+                    show={showDessertResetConfirmModal}
+                    title='Reset Nutrition List'
+                    content='Are you sure want to reset nutrition data?'
+                    confirmCallBack={resetData}
+                    closeModelDialogCallback={closeDessertResetConfirmModel} />
             </div>
         </DessertsContext.Provider>
     );

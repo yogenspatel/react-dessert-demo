@@ -27,7 +27,7 @@ const Modal = ({ show = false, title = '', children, closeModel} : { show: boole
         }
     }
     useEffect(() => {
-        window.addEventListener('keydown', e => closeCurrentModelOnEscKey(e), false);
+        window.addEventListener('keydown', closeCurrentModelOnEscKey, false);
     }, []);
     if (!show) {
         return null;

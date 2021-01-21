@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 export const GET_ALL_DESSERTS = gql `
-  query GetAllDesserts {
-    desserts{
+  query GetAllDesserts($pagination: Paginate) {
+    desserts(paginate: $pagination){
       id
       name
       calories
@@ -9,6 +9,7 @@ export const GET_ALL_DESSERTS = gql `
       carbs
       protien
     }
+    total
   }
 `;
 

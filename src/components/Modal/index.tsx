@@ -1,4 +1,3 @@
-import { keyBy } from 'lodash';
 import React, { SyntheticEvent, useEffect } from 'react';
 
 const Modal = ({ show = false, title = '', children, closeModel} : { show: boolean, title: string, children: any, closeModel: Function }) => {
@@ -28,7 +27,10 @@ const Modal = ({ show = false, title = '', children, closeModel} : { show: boole
     }
     useEffect(() => {
         window.addEventListener('keydown', closeCurrentModelOnEscKey, false);
-    }, []);
+        return (() => {
+            window.removeEventListener('keydown', closeCurrentModelOnEscKey, false);
+        });
+    });
     if (!show) {
         return null;
     }

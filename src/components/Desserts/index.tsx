@@ -7,9 +7,21 @@ import _ from 'lodash';
 import { DessertsContext } from '../../contexts/DessertList';
 import Model from '../Modal';
 import ModelDialog from '../ModalDialog';
+import Pagination from '../Pagination';
+import PageSize from '../PageSize';
+import FilterDesserts from '../FilterDesserts';
 
 const Desserts = () => {
-    const { data, loading, error } = useGetAllDessertsQuery();
+    const [pageSize, setPageSize]: [number, Function] = useState(10);
+    const [currentPage, setCurrentPage]: [number, Function] = useState(1);
+    let { loading, error, fetchMore: fetchMoreDessertsData } = useGetAllDessertsQuery({
+        variables: {
+            pagination: {
+                page: currentPage,
+                count: pageSize
+            }
+        }
+    });
     // Hook for the GraphQL Mutation to add dessert
     const [addDessertMutation] = useAddDessertMutation();
     // Hook for the GraphQL Mutation to remove desserts
@@ -18,6 +30,7 @@ const Desserts = () => {
     const [resetDessetsDataMutation] = useResetDessertDataMutation()
     // Hook to maintain state or set state for the list of dessert
     const [dessertsState, setDessertsState]: [Array<Dessert>, Function] = useState([]);
+    const [totalDesserts, setTotalDesserts]: [number, Function] = useState(0);
     // Hook to maintain state or set state for the selected desserts
     const [selectedIndexes, setSelectedIndexes]: [Array<number>, Function] = useState([]);
     // Hook to maintain state or set state for the sort (key, order)
@@ -30,10 +43,24 @@ const Desserts = () => {
     const [showDessertDeleteConfirmModal, setShowDessertDeleteConfirmModal] = useState(false);
     // Hook to maintain state or set state to show/hide reset confirm modal
     const [showDessertResetConfirmModal, setShowDessertResetConfirmModal] = useState(false);
-    
+
     useEffect(() => {
-        setDessertsState(data?.desserts || []);
-    }, [data]);
+        const getDessertsData = async () => {
+            console.log('In page size updated:');
+            const dessertsData = await fetchMoreDessertsData({
+                variables: {
+                    pagination: {
+                        page: currentPage,
+                        count: pageSize
+                    }
+                }
+            });
+            setDessertsState(dessertsData.data.desserts);
+            setTotalDesserts(dessertsData.data.total || 0);
+        }
+        getDessertsData();
+    }, [pageSize, currentPage]);
+    
     if (loading) {
         return <div>Loading</div>;
     }
@@ -76,7 +103,7 @@ const Desserts = () => {
         // setShowDessertAdd(false);
         const newValArrayObject = Object.values(newVal);
         const dessertObject: Dessert = {
-            id: dessertsState.length + 1,
+            id: totalDesserts + 1,
             name: newValArrayObject[0],
             calories: +newValArrayObject[1],
             fat: +newValArrayObject[2],
@@ -200,6 +227,7 @@ const Desserts = () => {
             setShowDessertResetConfirmModal(true);
         }
     }
+
     let deleteButtonClassNames = 'bw1 mr2 o-50 br2 bg-gray black pa1 tc ttu tracked';
     if (selectedIndexes.length) {
         deleteButtonClassNames = 'bw1 pointer mr2 glow br2 bg-blue white pa1 tc ttu tracked';
@@ -219,6 +247,10 @@ const Desserts = () => {
                         className={resetDataButtonClassNames}
                         onClick={showDessertResetConfirmModelDialog}>Reset Data</button>
                 </div>
+                <PageSize
+                    pageSize={pageSize}
+                    setPageSize={setPageSize} />
+                {/* <FilterDesserts /> */}
                 <div className='flex items-center bg-light-pink h3'>
                     <span className='hot-pink b flex-auto ml2'>{selectedIndexes.length} Selected</span>
                     <div className='fr mb2'>
@@ -234,7 +266,7 @@ const Desserts = () => {
                     </div>
                 </div>
                 <div className='cb mb2'></div>
-                {dessertsState.length ? <table className='collapse ba br2 b--black-10 pv2 ph3 w-100'>
+                {dessertsState.length ? <div><table className='collapse ba br2 b--black-10 pv2 ph3 w-100'>
                     <thead>
                         <tr className='striped--light-gray'>
                             <th className='tl pv2 ph3'>
@@ -261,7 +293,12 @@ const Desserts = () => {
                             )
                         })}
                     </tbody>
-                </table> : <div className='bg-washed-yellow ba br1 orange pa1'><span>There are no Nutrition Data available. Click <span className='b blue underline-hover pointer' onClick={toggleAddDessert}>Add Dessert</span> to add data.</span></div>}
+                </table>
+                <Pagination
+                    count={pageSize}
+                    currentPage={currentPage}
+                    setCurrentPage={setCurrentPage}
+                    total={totalDesserts} /> </div> : <div className='bg-washed-yellow ba br1 orange pa1'><span>There are no Nutrition Data available. Click <span className='b blue underline-hover pointer' onClick={toggleAddDessert}>Add Dessert</span> to add data.</span></div>}
                 <Model
                     show={showDessertAddModal}
                     closeModel={closeDessertAddModel}

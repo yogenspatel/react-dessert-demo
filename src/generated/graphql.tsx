@@ -16,6 +16,11 @@ export type Scalars = {
 };
 
 
+export type Paginate = {
+  count?: Maybe<Scalars['Int']>;
+  page?: Maybe<Scalars['Int']>;
+};
+
 export type Dessert = {
   __typename?: 'dessert';
   id?: Maybe<Scalars['Int']>;
@@ -38,6 +43,12 @@ export type DessertInput = {
 export type Query = {
   __typename?: 'Query';
   desserts?: Maybe<Array<Maybe<Dessert>>>;
+  total?: Maybe<Scalars['Int']>;
+};
+
+
+export type QueryDessertsArgs = {
+  paginate?: Maybe<Paginate>;
 };
 
 export type Mutation = {
@@ -76,11 +87,14 @@ export type AddDessertMutation = (
   )>>> }
 );
 
-export type GetAllDessertsQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetAllDessertsQueryVariables = Exact<{
+  pagination?: Maybe<Paginate>;
+}>;
 
 
 export type GetAllDessertsQuery = (
   { __typename?: 'Query' }
+  & Pick<Query, 'total'>
   & { desserts?: Maybe<Array<Maybe<(
     { __typename?: 'dessert' }
     & Pick<Dessert, 'id' | 'name' | 'calories' | 'fat' | 'carbs' | 'protien'>
@@ -150,8 +164,8 @@ export type AddDessertMutationHookResult = ReturnType<typeof useAddDessertMutati
 export type AddDessertMutationResult = Apollo.MutationResult<AddDessertMutation>;
 export type AddDessertMutationOptions = Apollo.BaseMutationOptions<AddDessertMutation, AddDessertMutationVariables>;
 export const GetAllDessertsDocument = gql`
-    query GetAllDesserts {
-  desserts {
+    query GetAllDesserts($pagination: Paginate) {
+  desserts(paginate: $pagination) {
     id
     name
     calories
@@ -159,6 +173,7 @@ export const GetAllDessertsDocument = gql`
     carbs
     protien
   }
+  total
 }
     `;
 
@@ -174,6 +189,7 @@ export const GetAllDessertsDocument = gql`
  * @example
  * const { data, loading, error } = useGetAllDessertsQuery({
  *   variables: {
+ *      pagination: // value for 'pagination'
  *   },
  * });
  */
